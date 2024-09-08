@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "idcard-tool": "^1.0.1"
+    "idcard-tool": "^1.0.1",
+    "otpauth": "^9.3.2"
   }
 }
