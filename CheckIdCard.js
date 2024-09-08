@@ -1,4 +1,4 @@
-const idcard = require('idcard-tool');// 假设 idcard-tool 提供了浏览器兼容的版本
+import idcard from 'idcard-tool';// 假设 idcard-tool 提供了浏览器兼容的版本
 
 export const CheckIdCard = async (number) => {
     const numberStr = typeof number === 'number' ? number.toString() : number;
