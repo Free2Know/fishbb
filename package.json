@@ -4,7 +4,6 @@
   "description": "60score网站的npm包",
   "type": "module",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "exit 0"
   },
