@@ -1,2 +1,2 @@
 # 60scorenpm
-60score网站的npm包
+提供给www.60score.com使用的npm包
