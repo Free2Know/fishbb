@@ -22,7 +22,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate OTP
+        id: generate_otp
+        run: |
+          # 使用 otpauth 库生成一次性密码
+          OTP=$(node -e "const otpauth = require('otpauth'); const totp = new otpauth.TOTP({ issuer: 'npm', label: 'your-email@example.com', algorithm: 'SHA1', digits: 6, period: 30 }); console.log(totp.generate());")
+          echo "::set-output name=otp::$OTP"
+
       - name: Publish package
-        run: npm publish
+        run: npm publish --otp=${{ steps.generate_otp.outputs.otp }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
