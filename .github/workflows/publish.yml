@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project (if needed)
-        run: npm run build # 修改为你的构建命令，如果不需要构建，可以删除此行
-
       - name: Publish package
         run: npm publish
         env:
