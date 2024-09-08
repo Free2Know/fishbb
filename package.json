@@ -1,8 +1,9 @@
 {
   "name": "60score-npm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "60score网站的npm包",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "exit 0"
   },
