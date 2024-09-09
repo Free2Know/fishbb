@@ -8,7 +8,7 @@ const headers = {
     'Authorization': 'Bearer uHut6fq9nNa0a2cFjviRyj1ED10ZXVsf',
 };
 
-export const getChatCompletion = async (assistantId, userId, query) => {
+export const chat = async (assistantId, userId, query) => {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
