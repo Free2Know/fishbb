@@ -1,7 +1,7 @@
 {
   "name": "fishbb",
   "version": "1.0.1",
-  "description": "http://www.60score.com 引用的npm包",
+  "description": "请参阅[README.md](./README.md)以获取更多信息。",
   "type": "module",
   "main": "index.js",
   "scripts": {
