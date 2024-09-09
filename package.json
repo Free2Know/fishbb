@@ -1,7 +1,7 @@
 {
   "name": "fishbb",
   "version": "1.0.1",
-  "description": "http://www.60score.com 后台的包",
+  "description": "http://www.60score.com 后台的npm包",
   "type": "module",
   "main": "index.js",
   "scripts": {
