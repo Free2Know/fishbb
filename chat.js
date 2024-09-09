@@ -1,5 +1,4 @@
-// api.js
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 const API_URL = 'https://yuanqi.tencent.com/openapi/v1/agent/chat/completions';
 const headers = {
@@ -10,32 +9,24 @@ const headers = {
 
 export const chat = async (assistantId, userId, query) => {
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-                assistant_id: assistantId,
-                user_id: userId,
-                stream: false,
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'text',
-                                text: query,
-                            },
-                        ],
-                    },
-                ],
-            }),
-        });
+        const response = await axios.post(API_URL, {
+            assistant_id: assistantId,
+            user_id: userId,
+            stream: false,
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: query,
+                        },
+                    ],
+                },
+            ],
+        }, { headers });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        return await response.json();
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch chat completion:', error);
     }

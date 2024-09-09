@@ -1,6 +1,6 @@
 {
   "name": "fishbb",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "请参阅[README.md](./README.md)以获取更多信息。",
   "type": "module",
   "main": "index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
     "idcard-tool": "^1.0.1",
-    "node-fetch": "^3.3.2",
     "otpauth": "^9.3.2"
   }
 }
