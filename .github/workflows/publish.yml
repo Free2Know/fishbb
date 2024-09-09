@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "package.json"
+
 
 jobs:
   publish:
@@ -24,15 +23,18 @@ jobs:
           registry-url: https://registry.npmjs.org/
           always-auth: true
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Get package version
         id: get_version
-        run: echo "::set-output name=PKG_VERSION::$(node -p \"require('./package.json').version\")"
+        run: echo "::set-output name=PKG_VERSION::$(jq -r .version package.json)"
 
       - name: Check if version exists on npm
         id: check_version
         run: |
           VERSION_EXISTS=$(npm view ${{ steps.get_version.outputs.PKG_VERSION }} dist-tags.latest --silent 2>/dev/null)
-          if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get_version.outputs.PKG_VERSION }}" ]; then
+          if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get class="steps.get_version.outputs.PKG_VERSION" }}" ]; then
             echo "::set-output name=should_publish::true"
           else
             echo "::set-output name=should_publish::false"
