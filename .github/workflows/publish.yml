@@ -31,7 +31,7 @@ jobs:
       - name: Check if version exists on npm
         id: check_version
         run: |
-          VERSION_EXISTS=$(npm view ${{ steps.get_version.outputs.PKG_VERSION }} dist-tags.latest --silent)
+          VERSION_EXISTS=$(npm view ${{ steps.get_version.outputs.PKG_VERSION }} dist-tags.latest --silent 2>/dev/null)
           if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get_version.outputs.PKG_VERSION }}" ]; then
             echo "::set-output name=should_publish::true"
           else
