@@ -5,18 +5,19 @@ on:
     branches:
       - main
 
-
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
+        # 检出仓库代码，fetch-depth设置为2以获取必要的提交记录
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2 # 拉取最近两次提交以便于比较
+          fetch-depth: 2
 
       - name: Set up Node.js
+        # 设置Node.js环境，指定版本和NPM注册表URL
         uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -24,17 +25,20 @@ jobs:
           always-auth: true
 
       - name: Install jq
+        # 安装jq工具用于解析JSON文件
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Get package version
         id: get_version
+        # 获取package.json中的版本号
         run: echo "::set-output name=PKG_VERSION::$(jq -r .version package.json)"
 
       - name: Check if version exists on npm
         id: check_version
+        # 检查该版本是否已经在NPM上发布
         run: |
           VERSION_EXISTS=$(npm view ${{ steps.get_version.outputs.PKG_VERSION }} dist-tags.latest --silent 2>/dev/null)
-          if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get class="steps.get_version.outputs.PKG_VERSION" }}" ]; then
+          if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get_version.outputs.PKG_VERSION }}" ]; then
             echo "::set-output name=should_publish::true"
           else
             echo "::set-output name=should_publish::false"
@@ -42,10 +46,12 @@ jobs:
 
       - name: Install dependencies
         if: steps.check_version.outputs.should_publish == 'true'
+        # 如果版本尚未发布，则安装依赖
         run: npm ci
 
       - name: Publish package
         if: steps.check_version.outputs.should_publish == 'true'
+        # 如果版本尚未发布，则发布包
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
