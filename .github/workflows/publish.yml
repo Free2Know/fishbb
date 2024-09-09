@@ -28,30 +28,36 @@ jobs:
         # 安装jq工具用于解析JSON文件
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Get package version
-        id: get_version
-        # 获取package.json中的版本号
+      - name: Get current package version
+        id: get_current_version
+        # 获取当前版本号
         run: echo "::set-output name=PKG_VERSION::$(jq -r .version package.json)"
 
-      - name: Check if version exists on npm
-        id: check_version
-        # 检查该版本是否已经在NPM上发布
+      - name: Get previous package version
+        id: get_previous_version
+        # 获取上一次提交前的版本号
         run: |
-          VERSION_EXISTS=$(npm view ${{ steps.get_version.outputs.PKG_VERSION }} dist-tags.latest --silent 2>/dev/null)
-          if [ -z "$VERSION_EXISTS" ] || [ "$VERSION_EXISTS" != "${{ steps.get_version.outputs.PKG_VERSION }}" ]; then
+          PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
+          echo "::set-output name=PREVIOUS_PKG_VERSION::$(git show $PREVIOUS_COMMIT:package.json | jq -r .version)"
+
+      - name: Determine if the version has changed
+        id: check_version_change
+        # 检查版本号是否变化
+        run: |
+          if [ "${{ steps.get_current_version.outputs.PKG_VERSION }}" != "${{ steps.get_previous_version.outputs.PREVIOUS_PKG_VERSION }}" ]; then
             echo "::set-output name=should_publish::true"
           else
             echo "::set-output name=should_publish::false"
           fi
 
       - name: Install dependencies
-        if: steps.check_version.outputs.should_publish == 'true'
-        # 如果版本尚未发布，则安装依赖
+        if: steps.check_version_change.outputs.should_publish == 'true'
+        # 如果版本已更改，则安装依赖
         run: npm ci
 
       - name: Publish package
-        if: steps.check_version.outputs.should_publish == 'true'
-        # 如果版本尚未发布，则发布包
+        if: steps.check_version_change.outputs.should_publish == 'true'
+        # 如果版本已更改，则发布包
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
