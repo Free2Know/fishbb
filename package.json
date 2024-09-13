@@ -1,12 +1,12 @@
 {
   "name": "fishbb",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "请参阅[README.md](./README.md)以获取更多信息。",
   "type": "module",
   "main": "index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.js",
+      "import": "./esm.js",
       "require": "./index.js"
     }
   },

@@ -1,6 +1,11 @@
-export { leapyear } from './leapyear.js';
-export { oddEven } from './oddEven.js';
-export { CheckIdCard } from './CheckIdCard.js';
-export { HelloWorld } from './helloworld.js';
-export { GoodbyeWorld } from './helloworld.js';
-export { chat } from './chat.js';
+// index.js
+import { exports } from './sharedExports.js';
+
+exports.forEach(({ key, path }) => {
+    Object.defineProperty(exports, key, {
+        get() {
+            return require(path);
+        },
+        configurable: true
+    });
+});
