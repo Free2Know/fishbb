@@ -1,11 +1,7 @@
 // esm.js
-import { exports } from './sharedExports.js';
-
-exports.forEach(({ key, path }) => {
-    import(path).then(module => {
-        Object.defineProperty(exports, key, {
-            value: module[key],
-            enumerable: true
-        });
-    });
-});
+export { leapyear } from './leapyear.js';
+export { oddEven } from './oddEven.js';
+export { CheckIdCard } from './CheckIdCard.js';
+export { HelloWorld } from './helloworld.js';
+export { GoodbyeWorld } from './helloworld.js';
+export { chat } from './chat.js';
