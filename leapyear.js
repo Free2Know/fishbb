@@ -1,4 +1,4 @@
-export const leapyear = async (number) => {
+export function leapyear(number) {
     const numberStr = typeof number === 'number' ? number.toString() : number;
     if (typeof numberStr !== 'string' || !/^[0-9]+$/.test(numberStr)) {
         throw new Error('数据格式不正确，number 字段必须是数字字符串');
