@@ -23,7 +23,7 @@ export function calculateRetirement(year, month, type) {
             result_month = "36个月";
             var add_date = addMonths(new Date(year, month, 1), 60 * 12 + 36);
             result_time =
-                add_date.getFullYear() + "th" + (add_date.getMonth() + 1) + "月";
+                add_date.getFullYear() + "年" + (add_date.getMonth() + 1) + "月";
         } else {
             var month_diff = Math.ceil(
                 (getMonthDiff(new Date(1965, 1, 1), new Date(year, month, 1)) +
