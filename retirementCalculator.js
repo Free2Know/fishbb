@@ -11,6 +11,7 @@ export function calculateRetirement(year, month, type) {
     let result_month = "";
 
     if (type == 1) {
+        //男职工
         if (year < 1965) {
             result = "60岁";
             result_month = "0个月";
@@ -49,6 +50,7 @@ export function calculateRetirement(year, month, type) {
     }
 
     if (type == 2) {
+        //原法定退休年龄五十五周岁的女职工
         if (year < 1970) {
             result = "55岁";
             result_month = "0个月";
@@ -89,6 +91,7 @@ export function calculateRetirement(year, month, type) {
     }
 
     if (type == 3) {
+        //原法定退休年龄五十周岁的女职工
         if (year < 1975) {
             result = "50岁";
             result_month = "0个月";
