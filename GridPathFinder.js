@@ -9,7 +9,7 @@ export class GridPathFinder {
     }
 
     decideSingleBounds(bounds, singleBounds) {
-        return (bounds & singleBounds) !== 0;
+        return (bounds & singleBounds)!== 0;
     }
 
     setPassedPotAndPath(p, a, b) {
@@ -64,13 +64,14 @@ export class GridPathFinder {
         let a = this.path[nowPosition];
         if (nowPosition === this.path.length - 1) {
             this.noFullPath = false;
+            return;
         }
 
         // 左边是否可以走
         if (this.noFullPath &&
-            !this.decideSingleBounds(this.decideBounds(a), 4) &&
-            !this.passedPotIndexOutOfBounds(a - 1) &&
-            !this.passedPotOrNotExistPot(a - 1)) {
+           !this.decideSingleBounds(this.decideBounds(a), 4) &&
+           !this.passedPotIndexOutOfBounds(a - 1) &&
+           !this.passedPotOrNotExistPot(a - 1)) {
             this.setPassedPotAndPath(nowPosition + 1, a - 1);
             this.run(nowPosition + 1);
             flag = true;
@@ -83,9 +84,9 @@ export class GridPathFinder {
 
         // 右边是否可以走
         if (this.noFullPath &&
-            !this.decideSingleBounds(this.decideBounds(a), 8) &&
-            !this.passedPotIndexOutOfBounds(a + 1) &&
-            !this.passedPotOrNotExistPot(a + 1)) {
+           !this.decideSingleBounds(this.decideBounds(a), 8) &&
+           !this.passedPotIndexOutOfBounds(a + 1) &&
+           !this.passedPotOrNotExistPot(a + 1)) {
             this.setPassedPotAndPath(nowPosition + 1, a + 1);
             this.run(nowPosition + 1);
             flag = true;
@@ -98,9 +99,9 @@ export class GridPathFinder {
 
         // 上边是否可以走
         if (this.noFullPath &&
-            !this.decideSingleBounds(this.decideBounds(a), 1) &&
-            !this.passedPotIndexOutOfBounds(a - this.column) &&
-            !this.passedPotOrNotExistPot(a - this.column)) {
+           !this.decideSingleBounds(this.decideBounds(a), 1) &&
+           !this.passedPotIndexOutOfBounds(a - this.column) &&
+           !this.passedPotOrNotExistPot(a - this.column)) {
             this.setPassedPotAndPath(nowPosition + 1, a - this.column);
             this.run(nowPosition + 1);
             flag = true;
@@ -113,9 +114,9 @@ export class GridPathFinder {
 
         // 下边是否可以走
         if (this.noFullPath &&
-            !this.decideSingleBounds(this.decideBounds(a), 2) &&
-            !this.passedPotIndexOutOfBounds(a + this.column) &&
-            !this.passedPotOrNotExistPot(a + this.column)) {
+           !this.decideSingleBounds(this.decideBounds(a), 2) &&
+           !this.passedPotIndexOutOfBounds(a + this.column) &&
+           !this.passedPotOrNotExistPot(a + this.column)) {
             this.setPassedPotAndPath(nowPosition + 1, a + this.column);
             this.run(nowPosition + 1);
             flag = true;
