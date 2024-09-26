@@ -1,6 +1,6 @@
 {
   "name": "fishbb",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "请参阅README.md获取更多信息。",
   "type": "module",
   "main": "index.js",
