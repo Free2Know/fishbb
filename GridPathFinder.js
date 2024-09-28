@@ -1,4 +1,4 @@
-class GridPathFinder {
+export class GridPathFinder {
     constructor(row, column, notExistPotList) {
         this.noFullPath = true;
         this.column = column;
