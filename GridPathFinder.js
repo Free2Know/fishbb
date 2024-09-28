@@ -20,7 +20,12 @@ export class GridPathFinder {
         } else if (args.length === 1) {
             const [a] = args;
             this.setPassedPotAndPath(0, a, true);
-        } else {
+        }
+        else if (args.length === 2) {
+            const [p, a] = args;
+            this.setPassedPotAndPath(p, a, true);
+        }
+        else {
             throw new Error('Invalid number of arguments');
         }
     }
