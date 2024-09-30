@@ -1,5 +1,3 @@
-import { writeFile, readFile } from 'fs/promises';
-
 export class GridPathFinder {
     constructor(row, column, notExistPotList) {
         this.row = row;
@@ -183,65 +181,3 @@ export class GridPathFinder {
         return oddDegreeCount <= 2;
     }
 }
-
-export class LevelManager {
-    static async generateValidLevels(numLevels, minRows, maxRows, minCols, maxCols, maxNotExists) {
-        const levels = [];
-
-        while (levels.length < numLevels) {
-            const rows = Math.floor(Math.random() * (maxRows - minRows + 1)) + minRows;
-            const cols = Math.floor(Math.random() * (maxCols - minCols + 1)) + minCols;
-            const totalCells = rows * cols;
-            const numNotExists = Math.floor(Math.random() * (Math.min(maxNotExists, totalCells - 1) + 1));
-
-            const notExistPotList = new Set();
-            while (notExistPotList.size < numNotExists) {
-                const pot = Math.floor(Math.random() * totalCells);
-                notExistPotList.add(pot);
-            }
-
-            const notExistPotArray = Array.from(notExistPotList);
-            const gridPathFinder = new GridPathFinder(rows, cols, notExistPotArray);
-
-            if (gridPathFinder.isOneStroke()) {
-                levels.push({
-                    id: levels.length + 1,
-                    rows: rows,
-                    columns: cols,
-                    notExistPotList: notExistPotArray
-                });
-            }
-        }
-
-        return levels;
-    }
-
-    static async saveLevelsToFile(levels, filePath) {
-        await writeFile(filePath, JSON.stringify({ levels: levels }, null, 2));
-    }
-
-    static async loadLevelsFromFile(filePath) {
-        const data = await readFile(filePath, 'utf-8');
-        return JSON.parse(data).levels;
-    }
-
-    static getRandomLevel(levels) {
-        const randomIndex = Math.floor(Math.random() * levels.length);
-        return levels[randomIndex];
-    }
-}
-
-(async () => {
-    // 生成10个有效关卡，行数在5到10之间，列数在5到10之间，最多10个无效单元格
-    const validLevels = await LevelManager.generateValidLevels(10, 5, 10, 5, 10, 10);
-
-    // 将生成的关卡保存到levels.json文件中
-    await LevelManager.saveLevelsToFile(validLevels, 'levels.json');
-
-    // 从文件中加载关卡
-    const loadedLevels = await LevelManager.loadLevelsFromFile('levels.json');
-
-    // 选择一个随机关卡
-    const randomLevel = LevelManager.getRandomLevel(loadedLevels);
-    console.log('Selected Random Level:', randomLevel);
-})();
