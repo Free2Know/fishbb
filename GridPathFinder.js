@@ -1,11 +1,13 @@
+import { writeFile, readFile } from 'fs/promises';
+
 export class GridPathFinder {
     constructor(row, column, notExistPotList) {
-        this.noFullPath = true;
-        this.column = column;
         this.row = row;
-        this.notExistPotList = notExistPotList;
+        this.column = column;
+        this.notExistPotList = notExistPotList || [];
         this.passedPot = new Array(row * column).fill(false);
         this.path = new Array(row * column - notExistPotList.length);
+        this.noFullPath = true;
     }
 
     decideSingleBounds(bounds, singleBounds) {
@@ -20,12 +22,10 @@ export class GridPathFinder {
         } else if (args.length === 1) {
             const [a] = args;
             this.setPassedPotAndPath(0, a, true);
-        }
-        else if (args.length === 2) {
+        } else if (args.length === 2) {
             const [p, a] = args;
             this.setPassedPotAndPath(p, a, true);
-        }
-        else {
+        } else {
             throw new Error('Invalid number of arguments');
         }
     }
@@ -35,7 +35,7 @@ export class GridPathFinder {
         if (pot < this.column) count += 1;
         if ((pot - (this.row - 1) * this.column) >= 0 && (pot - (this.row - 1) * this.column) < this.column) count += 2;
         if (pot % this.column === 0) count += 4;
-        if (pot % this.column === this.column - 1) count += 8; // 去掉了多余的return
+        if (pot % this.column === this.column - 1) count += 8;
         return count;
     }
 
@@ -137,4 +137,111 @@ export class GridPathFinder {
     setPassedPot(a, b) {
         this.passedPot[a] = b;
     }
+
+    isOneStroke() {
+        const degree = new Array(this.row * this.column).fill(0);
+        const visited = new Array(this.row * this.column).fill(false);
+
+        // Helper function to get valid neighbors
+        const getNeighbors = (i) => {
+            const neighbors = [];
+            if (i % this.column > 0 && !this.notExistPot(i - 1)) neighbors.push(i - 1);
+            if (i % this.column < this.column - 1 && !this.notExistPot(i + 1)) neighbors.push(i + 1);
+            if (i >= this.column && !this.notExistPot(i - this.column)) neighbors.push(i - this.column);
+            if (i < (this.row - 1) * this.column && !this.notExistPot(i + this.column)) neighbors.push(i + this.column);
+            return neighbors;
+        };
+
+        // DFS to check connectivity and calculate degrees
+        const dfs = (i) => {
+            if (visited[i]) return;
+            visited[i] = true;
+            const neighbors = getNeighbors(i);
+            degree[i] = neighbors.length;
+            neighbors.forEach(neighbor => dfs(neighbor));
+        };
+
+        // Find the first valid cell to start DFS
+        let startCell = null;
+        for (let i = 0; i < this.row * this.column; i++) {
+            if (!this.notExistPot(i)) {
+                startCell = i;
+                break;
+            }
+        }
+
+        if (startCell === null) return false; // No valid cells
+
+        dfs(startCell);
+
+        // Check if all valid cells are connected
+        for (let i = 0; i < this.row * this.column; i++) {
+            if (!this.notExistPot(i) && !visited[i]) return false; // Not all valid cells are connected
+        }
+
+        const oddDegreeCount = degree.filter(d => d % 2 !== 0).length;
+        return oddDegreeCount <= 2;
+    }
 }
+
+export class LevelManager {
+    static async generateValidLevels(numLevels, minRows, maxRows, minCols, maxCols, maxNotExists) {
+        const levels = [];
+
+        while (levels.length < numLevels) {
+            const rows = Math.floor(Math.random() * (maxRows - minRows + 1)) + minRows;
+            const cols = Math.floor(Math.random() * (maxCols - minCols + 1)) + minCols;
+            const totalCells = rows * cols;
+            const numNotExists = Math.floor(Math.random() * (Math.min(maxNotExists, totalCells - 1) + 1));
+
+            const notExistPotList = new Set();
+            while (notExistPotList.size < numNotExists) {
+                const pot = Math.floor(Math.random() * totalCells);
+                notExistPotList.add(pot);
+            }
+
+            const notExistPotArray = Array.from(notExistPotList);
+            const gridPathFinder = new GridPathFinder(rows, cols, notExistPotArray);
+
+            if (gridPathFinder.isOneStroke()) {
+                levels.push({
+                    id: levels.length + 1,
+                    rows: rows,
+                    columns: cols,
+                    notExistPotList: notExistPotArray
+                });
+            }
+        }
+
+        return levels;
+    }
+
+    static async saveLevelsToFile(levels, filePath) {
+        await writeFile(filePath, JSON.stringify({ levels: levels }, null, 2));
+    }
+
+    static async loadLevelsFromFile(filePath) {
+        const data = await readFile(filePath, 'utf-8');
+        return JSON.parse(data).levels;
+    }
+
+    static getRandomLevel(levels) {
+        const randomIndex = Math.floor(Math.random() * levels.length);
+        return levels[randomIndex];
+    }
+}
+
+(async () => {
+    // 生成10个有效关卡，行数在5到10之间，列数在5到10之间，最多10个无效单元格
+    const validLevels = await LevelManager.generateValidLevels(10, 5, 10, 5, 10, 10);
+
+    // 将生成的关卡保存到levels.json文件中
+    await LevelManager.saveLevelsToFile(validLevels, 'levels.json');
+
+    // 从文件中加载关卡
+    const loadedLevels = await LevelManager.loadLevelsFromFile('levels.json');
+
+    // 选择一个随机关卡
+    const randomLevel = LevelManager.getRandomLevel(loadedLevels);
+    console.log('Selected Random Level:', randomLevel);
+})();
