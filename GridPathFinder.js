@@ -180,4 +180,28 @@ export class GridPathFinder {
         const oddDegreeCount = degree.filter(d => d % 2 !== 0).length;
         return oddDegreeCount <= 2;
     }
+
+    areAdjacent(cell1, cell2) {
+        const col1 = cell1 % this.column;
+        const col2 = cell2 % this.column;
+        const row1 = Math.floor(cell1 / this.column);
+        const row2 = Math.floor(cell2 / this.column);
+
+        return (
+            (row1 === row2 && Math.abs(col1 - col2) === 1) || // 水平相邻
+            (col1 === col2 && Math.abs(row1 - row2) === 1)  // 垂直相邻
+        );
+    }
+
+    resetPath() {
+        this.path.fill(null);
+        this.passedPot.fill(false);
+        this.noFullPath = true;
+    }
+
+    checkPathCompleteness() {
+        const activeCells = this.passedPot.filter(passed => passed).length;
+        const totalActiveCells = this.row * this.column - this.notExistPotList.length;
+        return activeCells === totalActiveCells;
+    }
 }
