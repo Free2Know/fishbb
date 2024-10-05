@@ -4,7 +4,7 @@ export class GridPathFinder {
         this.column = column;
         this.notExistPotList = notExistPotList || [];
         this.passedPot = new Array(row * column).fill(false);
-        this.path = new Array(row * column - notExistPotList.length);
+        this.path = new Array(row * column - notExistPotList.length).fill(null); // 固定长度的 path 数组
         this.noFullPath = true;
     }
 
@@ -202,6 +202,7 @@ export class GridPathFinder {
     checkPathCompleteness() {
         const activeCells = this.passedPot.filter(passed => passed).length;
         const totalActiveCells = this.row * this.column - this.notExistPotList.length;
+        console.log('Active cells:', activeCells, 'Total active cells:', totalActiveCells);
         return activeCells === totalActiveCells;
     }
 }
