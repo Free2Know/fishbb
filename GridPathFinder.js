@@ -136,31 +136,13 @@ export class GridPathFinder {
         this.passedPot[a] = b;
     }
 
-    isOneStroke() {
-        const degree = new Array(this.row * this.column).fill(0);
+    isOneStroke(printPath = false) {
         const visited = new Array(this.row * this.column).fill(false);
+        const path = []; // 用于记录路径
 
-        // Helper function to get valid neighbors
-        const getNeighbors = (i) => {
-            const neighbors = [];
-            if (i % this.column > 0 && !this.notExistPot(i - 1)) neighbors.push(i - 1);
-            if (i % this.column < this.column - 1 && !this.notExistPot(i + 1)) neighbors.push(i + 1);
-            if (i >= this.column && !this.notExistPot(i - this.column)) neighbors.push(i - this.column);
-            if (i < (this.row - 1) * this.column && !this.notExistPot(i + this.column)) neighbors.push(i + this.column);
-            return neighbors;
-        };
+        let startCell = -1;
 
-        // DFS to check connectivity and calculate degrees
-        const dfs = (i) => {
-            if (visited[i]) return;
-            visited[i] = true;
-            const neighbors = getNeighbors(i);
-            degree[i] = neighbors.length;
-            neighbors.forEach(neighbor => dfs(neighbor));
-        };
-
-        // Find the first valid cell to start DFS
-        let startCell = null;
+        // 找到第一个有效的单元格开始 DFS
         for (let i = 0; i < this.row * this.column; i++) {
             if (!this.notExistPot(i)) {
                 startCell = i;
@@ -168,17 +150,51 @@ export class GridPathFinder {
             }
         }
 
-        if (startCell === null) return false; // No valid cells
+        if (startCell === -1) return false; // 没有有效的单元格
 
-        dfs(startCell);
+        // 获取有效邻居的辅助函数
+        const getNeighbors = (i) => {
+            const neighbors = [];
+            if (i % this.column > 0 && !this.notExistPot(i - 1) && !visited[i - 1]) neighbors.push(i - 1);
+            if (i % this.column < this.column - 1 && !this.notExistPot(i + 1) && !visited[i + 1]) neighbors.push(i + 1);
+            if (i >= this.column && !this.notExistPot(i - this.column) && !visited[i - this.column]) neighbors.push(i - this.column);
+            if (i < (this.row - 1) * this.column && !this.notExistPot(i + this.column) && !visited[i + this.column]) neighbors.push(i + this.column);
+            return neighbors;
+        };
 
-        // Check if all valid cells are connected
+        // DFS 检查连通性和确保每个单元格只访问一次
+        const dfs = (i) => {
+            if (visited[i]) return true; // 如果已经访问过，返回 true
+            visited[i] = true;
+            path.push(i); // 记录当前单元格到路径中
+            const neighbors = getNeighbors(i);
+            for (const neighbor of neighbors) {
+                if (!dfs(neighbor)) return false; // 如果邻居不能满足条件，返回 false
+            }
+            return true;
+        };
+
+        const isValid = dfs(startCell);
+
+        // 检查所有有效的单元格是否都被访问了一次
         for (let i = 0; i < this.row * this.column; i++) {
-            if (!this.notExistPot(i) && !visited[i]) return false; // Not all valid cells are connected
+            if (!this.notExistPot(i) && !visited[i]) return false; // 不是所有有效的单元格都被访问了
         }
 
-        const oddDegreeCount = degree.filter(d => d % 2 !== 0).length;
-        return oddDegreeCount <= 2;
+        // 检查路径是否连续
+        for (let i = 0; i < path.length - 1; i++) {
+            if (!this.areAdjacent(path[i], path[i + 1])) {
+                console.log(`Path error: ${path[i]} and ${path[i + 1]} are not adjacent`);
+                return false;
+            }
+        }
+
+        // 如果 printPath 为 true，则打印路径
+        if (printPath) {
+            console.log('Path:', path.join(' -> '));
+        }
+
+        return isValid;
     }
 
     areAdjacent(cell1, cell2) {
@@ -206,3 +222,16 @@ export class GridPathFinder {
         return activeCells === totalActiveCells;
     }
 }
+// // 创建实例并测试
+// const gridPathFinder = new GridPathFinder(5, 5, [18, 12, 15, 19, 20, 2, 10, 17]);
+// console.log("Is one stroke? (5x5 with holes)", gridPathFinder.isOneStroke(true));
+
+// const gridPathFinder1 = new GridPathFinder(3, 3, []);
+// console.log("Is one stroke? (3x3 full)", gridPathFinder1.isOneStroke(true));
+// const gridPathFinder6 = new GridPathFinder(6, 6, []);
+// console.log("Is one stroke? (3x3 full)", gridPathFinder6.isOneStroke(true));
+// const gridPathFinder2 = new GridPathFinder(3, 3, [1, 3, 5, 7]);
+// console.log("Is one stroke? (3x3 with holes)", gridPathFinder2.isOneStroke(true));
+
+// const gridPathFinder3 = new GridPathFinder(3, 3, [1, 2, 5]);
+// console.log("Is one stroke? (3x3 disconnected)", gridPathFinder3.isOneStroke(true));
