@@ -4,7 +4,7 @@ const API_URL = 'https://yuanqi.tencent.com/openapi/v1/agent/chat/completions';
 const headers = {
     'X-Source': 'openapi',
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer uHut6fq9nNa0a2cFjviRyj1ED10ZXVsf',
+    'Authorization': 'Bearer THjfsDJGKOpHypBvuoHMOldeOgxVtI8j',
 };
 
 export const chat = async (assistantId, userId, query) => {
